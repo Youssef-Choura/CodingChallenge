@@ -28,24 +28,24 @@ export class ArtistService {
     };
 
     return firstValueFrom(
-      this.httpService.get<any>(this.api_url, {
+      this.httpService.get(this.api_url, {
         params: requestParams,
       }),
     )
-      .then((response) => {
-        const results = response.data as ArtistEndpointResponse;
-        if (
-          !results.data ||
-          !results.data.results ||
-          !results.data.results.artistmatches?.artist?.length
-        ) {
+      .then((data) => {
+        const response = data as ArtistEndpointResponse;
+
+        const results = response.data.results;
+
+        if (!results || !results.artistmatches?.artist?.length) {
           throw handleError({
             errorMessage: `ERROR - Request ${this.api_url} returned no data.`,
             errorType: HttpStatus.NO_CONTENT,
-            response: results,
+            response: response.data,
           });
         }
-        return results.data.results.artistmatches.artist;
+
+        return results.artistmatches.artist;
       })
       .catch((error) => {
         throw handleError({
