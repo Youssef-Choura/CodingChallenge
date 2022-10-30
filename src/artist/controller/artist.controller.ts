@@ -34,7 +34,7 @@ export class ArtistController {
   writeArtistInfoToCSV(
     @Query('name') name: string,
     @Query('fileName') fileName: string,
-  ): Promise<void> {
+  ): Promise<string> {
     return this.artistService.writeArtistInfoToCSV(name, fileName);
   }
 }
