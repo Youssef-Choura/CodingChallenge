@@ -21,7 +21,7 @@ export const MapArtistData = (artistDataList: ArtistResponse[]): Artist[] => {
       mbid,
       url: ReplaceComma(url),
       image_small: image.find((image) => image['size'] === 'small')['#text'],
-      image: image.map((obj) => ({ '#text': obj['#text'] })),
+      image: image.map((obj) => ({ '#text': obj['#text'], size: obj['size'] })),
     };
   });
 };
@@ -41,6 +41,8 @@ export const writeToCSVFile = (
       console.log(err);
     }
   }
+  // removing unnecessary characters from the file name
+  fileName = fileName.replace('.csv', '');
   // Writing the data to a csv file
   // Creating a WriteStream
   const stream = fs.createWriteStream(directoryPath + fileName + '.csv', {
@@ -70,7 +72,9 @@ export const writeToCSVFile = (
   // Handling errors and logging results
   stream
     .on('finish', () =>
-      console.log(stream.bytesWritten + ' bytes written to ' + fileName),
+      console.log(
+        stream.bytesWritten + ' bytes written to ' + fileName + '.csv',
+      ),
     )
     .on('error', (err) => console.log('error : ', err));
   // Closing the stream

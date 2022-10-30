@@ -41,9 +41,9 @@ export class ArtistService {
   }
 
   // Method to get data from the Last.fm api, map it to the artist model and write it to a csv file
-  writeArtistInfoToCSV(artist: string, fileName: string): Promise<void> {
+  writeArtistInfoToCSV(artist: string, fileName?: string): Promise<void> {
     return this.getArtistByName(artist).then((results) =>
-      writeToCSVFile(results, fileName),
+      writeToCSVFile(results, fileName ? fileName : artist),
     );
   }
 }

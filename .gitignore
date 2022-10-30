@@ -34,5 +34,7 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# readMeImages
+src/imgs
 # locally generated csv files
 /src/WrittenCsvFiles
