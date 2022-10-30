@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
-import { writeToCSVFile } from '../utilities/data-processing.utilies';
-import { ArtistResponse } from '../model/artist.models';
+import { writeToCSVFile } from '../utilities/data-processing';
+import { ArtistEndpointResponse, ArtistResponse } from '../model/artist.models';
+import { handleError } from '../utilities/error-handling';
 
 @Injectable()
 export class ArtistService {
@@ -27,16 +28,30 @@ export class ArtistService {
     };
 
     return firstValueFrom(
-      this.httpService.get<any>(this.api_url, { params: requestParams }),
+      this.httpService.get<any>(this.api_url, {
+        params: requestParams,
+      }),
     )
       .then((response) => {
-        if (!response || !response.data) {
-          throw new Error(`ERROR - Request ${this.api_url} returned no data.`);
+        const results = response.data as ArtistEndpointResponse;
+        if (
+          !results.data ||
+          !results.data.results ||
+          !results.data.results.artistmatches?.artist?.length
+        ) {
+          throw handleError({
+            errorMessage: `ERROR - Request ${this.api_url} returned no data.`,
+            errorType: HttpStatus.NO_CONTENT,
+            response: results,
+          });
         }
-        return response.data.results.artistmatches.artist;
+        return results.data.results.artistmatches.artist;
       })
-      .catch(() => {
-        throw new Error(`ERROR - Request ${this.api_url} returned an error.`);
+      .catch((error) => {
+        throw handleError({
+          errorMessage: `ERROR - Request ${this.api_url} returned an error.`,
+          response: error,
+        });
       });
   }
 
